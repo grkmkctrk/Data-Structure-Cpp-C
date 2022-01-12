@@ -272,4 +272,23 @@ void swapNodes(Node<T>** head, int num1, int num2){
     current2->next = temp;
 }
 
+template<class T>
+void reverseNodes(Node<T>** head){
+    Node<T>* current = *head;
+    Node<T>* previous = NULL;
+    Node<T>* next = NULL;
+
+    while(current != NULL){
+        next = current->next;
+        current->next = previous;
+        previous = current;
+        current = next;
+    }
+    *head = previous;
+}
+
+
+
+
+
 #endif

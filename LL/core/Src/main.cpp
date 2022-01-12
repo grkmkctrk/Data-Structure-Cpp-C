@@ -70,5 +70,10 @@ int main()
     swapNodes(&nodes, 6, 1);
     PrintLL(nodes);
 
+    std::cout << "---- reverseNodes() ----" << std::endl;
+    reverseNodes(&nodes);
+    PrintLL(nodes);
+
+
     return 0;
 }
