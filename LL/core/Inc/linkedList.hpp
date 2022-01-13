@@ -287,8 +287,4 @@ void reverseNodes(Node<T>** head){
     *head = previous;
 }
 
-
-
-
-
 #endif
