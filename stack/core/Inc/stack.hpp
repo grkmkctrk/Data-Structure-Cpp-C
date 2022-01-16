@@ -55,20 +55,37 @@ private:
     };
 
     Node* top;
-
-    int size;
+    size_t size;
+    size_t capacity;
 
 public:
 
-    stack() : top(nullptr), size(0){
+    stack() : top(nullptr), size(0), capacity(100){
         // std::cout << "stack()" << std::endl;
+        // default capacity is 100
+    }
+    
+    stack(size_t s) : top(nullptr), size(0), capacity(s){
+        // std::cout << "stack(size_t s)" << std::endl;        
     }
 
     ~stack(){
         // std::cout << "~stack()" << std::endl;
     }
 
+    bool isEmpty(){
+        return top == nullptr;
+    }
+
+    bool isFull(){
+        return size == capacity;
+    }
+
     void push(T data){
+        if(isFull()){
+            std::cout << "stack is full" << std::endl;
+            return;
+        }
         Node* newNode = new Node(data);
         newNode->prev = top;
         top = newNode;
@@ -76,7 +93,7 @@ public:
     }
 
     void pop(){
-        if(top == nullptr){
+        if(isEmpty()){
             std::cout << "Stack is empty." << std::endl;
             return;
         }
@@ -86,8 +103,12 @@ public:
         size--;
     }
 
+    size_t getSpace(){
+        return capacity-size;
+    }
+
     void print(){
-        if(top == nullptr){
+        if(isEmpty()){
             std::cout << "Stack is empty." << std::endl;
             return;
         }
@@ -100,22 +121,96 @@ public:
     }
 
     T peek(){
-        if(top == nullptr){
+        if(isEmpty()){
             std::cout << "Stack is empty." << std::endl;
             return 0;
         }
         return top->data;
     }
-
-    bool isEmpty(){
-        return top == nullptr;
+    
+    void reverse(){
+        if(isEmpty()){
+            std::cout << "Stack is empty." << std::endl;
+            return;
+        }
+        Node* temp = top;
+        Node* prev = nullptr;
+        while(temp != nullptr){
+            Node* next = temp->prev;
+            temp->prev = prev;
+            prev = temp;
+            temp = next;
+        }
+        top = prev;    
     }
 
-    // bool isFull(){
-        // i didn't add limit to the stack
-        // so i can't check if the stack is full for now
-        // i will add it later
-    // }
+    T getNGE(int pos){
+        if(isEmpty()){
+            std::cout << "Stack is empty." << std::endl;
+            return 0;
+        }
+        if(pos > size){
+            std::cout << "Invalid position." << std::endl;
+            return 0;
+        }
+
+        Node* temp = top;
+        while(pos--){
+            temp = temp->prev; // to find where traversing should start
+        }
+
+        Node* temp2 = temp;
+        while(temp->prev != nullptr){ 
+            temp = temp->prev;
+            if(temp2->data < temp->data){
+                return temp->data;
+            }
+            return -1;
+        }
+        return -1;
+    }
+
+    void prettyPrint(){
+        if(isEmpty()){
+            std::cout << "Stack is empty." << std::endl;
+            return;
+        }
+        Node* temp = top;
+        int index = 0;
+        while(temp != nullptr){
+            if(temp == top)
+                std::cout << temp->data << " <-- top" << std::endl;
+            else
+                std::cout << temp->data << " <-- " << ++index << std::endl;
+            std::cout << "|" << std::endl;
+            std::cout << "v" << std::endl;
+            temp = temp->prev;
+        }
+        std::cout << "nullptr" << std::endl;
+    }
+
+    void sort(){
+        if(isEmpty()){
+            std::cout << "Stack is empty." << std::endl;
+            return;
+        }
+        Node* temp = top->prev;
+        Node* next = top;
+        while(temp->prev != nullptr){
+            if(temp->data > temp->prev->data){
+                T tempData = temp->data;
+                temp->data = temp->prev->data;
+                temp->prev->data = tempData;
+                if(temp->data < next->data){
+                    T tempData = temp->data;
+                    temp->data = next->data;
+                    next->data = tempData;
+                }
+            }
+            next = temp;
+            temp = temp->prev;
+        }
+    }
 
 };  
     
