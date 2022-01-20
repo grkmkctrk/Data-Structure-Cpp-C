@@ -66,6 +66,28 @@ public:
         return size == capacity;
     }
 
+     T getFront(){
+        if(isEmpty()){
+            throw "Queue is empty";
+        }
+        return front->data;
+    }
+
+    T getRear(){
+        if(isEmpty()){
+            throw "Queue is empty";
+        }
+        return rear->data;
+    }
+
+    int getSize(){
+        return size;
+    }
+
+    int getCapacity(){
+        return capacity;
+    }
+
     void enqueue(T data){
         if(isFull()){
             std::cout << "Queue is full" << std::endl;
@@ -93,28 +115,6 @@ public:
         delete temp;          // front address is now nullptr
         size--;
         return data;
-    }
-
-    T getFront(){
-        if(isEmpty()){
-            throw "Queue is empty";
-        }
-        return front->data;
-    }
-
-    T getRear(){
-        if(isEmpty()){
-            throw "Queue is empty";
-        }
-        return rear->data;
-    }
-
-    int getSize(){
-        return size;
-    }
-
-    int getCapacity(){
-        return capacity;
     }
 
     void reverseQueue(){
@@ -162,6 +162,7 @@ public:
             std::cout << "nullptr" << std::endl;
         }
     }
+  
     void queueInfo(){
         std::cout << "Queue Info" << std::endl;
         std::cout << "Size: " << size << std::endl;

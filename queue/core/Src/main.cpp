@@ -60,7 +60,6 @@ int main(){
     q1.dequeue();
     q1.print(print_type::PRINT_PRETTY);
 
-
     q1.queueInfo();
 
 
