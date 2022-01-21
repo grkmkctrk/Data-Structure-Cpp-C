@@ -46,7 +46,9 @@ int main(){
     // tree.printNode(2, 5);
     // tree.printNode(3, 9);
 
+    tree.remove(2, 4);
     tree.print(3);
+
 
     return 0;
 }
