@@ -17,6 +17,8 @@ enum class HeapType{ // to reach from main created as global class
 template <typename T>
 class Heap {
 private:
+
+
     // Heap node class
     class HeapNode{
     private:
@@ -40,6 +42,9 @@ private:
     HeapNode *root;
     // Heap type
     HeapType type;
+
+    uint64_t inx = 1;
+    uint8_t depth = 1;
 
     // Insertion
     void insertMin(T value);
@@ -95,32 +100,58 @@ void Heap<T>::insert(T value){
 
 template<class T>
 void Heap<T>::insertMin(T value){
-    if(isEmpty()){
-        this->root = new HeapNode(value);
-        return value;
-    }
-    HeapNode *current = root;
+    bool go = true;
+    uint64_t tempInx = inx;
+    uint8_t tempDepth = depth;
+    HeapNode *curr = root;
 
-    while(true){
-        if(value > current->value){
-            if(current->left == nullptr){
-                current->left = new HeapNode(value, current);
-                return;
+    if(isEmpty()){
+        root = new HeapNode(value);
+        inx++;
+        return;
+    }
+
+    while(go){
+
+        if(tempDepth == 1){            
+            if(inx % 2 == 0){
+                if(curr->left == nullptr){
+                    curr->left = new HeapNode(value, curr);
+                    inx++;
+                }
+                go = false;
             }else{
-                // check for if current->left->value greater then value
-                // if it is 
-                // current->right = new HeapNode(value, current);
-                // swap(current->left, current->right);
-                // if it is not which means current->left->value is less then value
-                // then current->right = new HeapNode(value, current);
-            
+
+                if(curr->left != nullptr)
+                    std::cout << curr->left->data << " ";
+                else std::cout << " ";
+                
+                go = false;
             }
-        }else{
-            // WARNING Error
-            throw std::logic_error("value can not be less than current->value");
+            inx++;
+            tempInx++;;
+        }
+
+
+        if(tempDepth > 1){
+            uint16_t side = pow(2, tempDepth)/2; // should i go left or right?
+            if(side < tempInx){
+                curr = curr->right;
+                tempInx = tempInx - side;
+            }
+            else curr = curr->left;
+            tempDepth--;
+        }
+
+        if(inx > pow(2, depth)){
+            depth++;
+            inx = 1;
         }
     }
+    tempInx = inx;
+    tempDepth = depth;
 }
+
 
 
 template<class T>
@@ -129,34 +160,5 @@ void Heap<T>::swap(HeapNode *a, HeapNode *b){
     a->value = b->value;
     b->value = temp;
 }
-
-/*
-void Heap<T>::insert(T value){
-    HeapNode *newNode = new HeapNode(value);
-    if(root == nullptr){
-        root = newNode;
-        return;
-    }
-    HeapNode *current = root;
-    while(true){
-        if(value < current->value){
-            if(current->left == nullptr){
-                current->left = newNode;
-                newNode->parent = current;
-                return;
-            }
-            current = current->left;
-        }
-        else{
-            if(current->right == nullptr){
-                current->right = newNode;
-                newNode->parent = current;
-                return;
-            }
-            current = current->right;
-        }
-    }
-}
-*/
 
 #endif
