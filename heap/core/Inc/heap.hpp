@@ -50,7 +50,7 @@ private:
     void insertMin(T value);
     // void insertMax(T value);
     void swap(HeapNode *a, HeapNode *b);
-    void sortIt(int8_t deep);
+    void sortIt(int8_t deep, uint64_t i);
 
 public:
     // Constructor 
@@ -64,8 +64,8 @@ public:
 
     // Heap operations
     void insert(T value);
-    // void remove(T value);
-    auto printNode(uint8_t deep, uint64_t index);   
+    void remove();
+    auto reachNode(uint8_t deep, uint64_t index);   
     void printHeap();
 };
 
@@ -85,14 +85,46 @@ HeapType Heap<T>::getType() const{
     return this->type;
 }
 
+
+template<class T>
+void Heap<T>::remove(){
+    if(isEmpty()){
+        std::cout << "Heap is empty" << std::endl;
+        return;
+    }else if(root->left == nullptr){
+        root = nullptr;
+        return;
+    }else if(root->left != nullptr && root->right == nullptr){
+        auto temp = root->left;
+        temp->parent->left = nullptr;
+        delete temp;
+        inx--;
+        return;
+    }else if(depth > 1){
+        if(inx == 1){
+            auto lastNodeAdded = reachNode(depth - 1, pow(2, depth - 1));
+            lastNodeAdded->parent->right = nullptr;
+            delete lastNodeAdded;
+            depth--;
+            inx = pow(2, depth);
+        }else{
+            auto lastNodeAdded = reachNode(depth, inx - 1);
+            if(inx - 1 % 2 == 0) lastNodeAdded->parent->right = nullptr;
+            else lastNodeAdded->parent->left = nullptr;
+            delete lastNodeAdded;
+            inx--;
+        }
+    }
+}
+
 template<class T>
 void Heap<T>::insert(T value){
     if(getType() == HeapType::MIN_HEAP){
-        std::cout << "Min" << std::endl;
+        // std::cout << "Min" << std::endl;
         insertMin(value);
     }else if (getType() == HeapType::MAX_HEAP){
         std::cout << "Max" << std::endl;
-        insertMax(value);
+        // insertMax(value);
     }else{
         std::cout << "Error" << std::endl;
         throw std::runtime_error("Heap type not supported");
@@ -113,21 +145,26 @@ void Heap<T>::insertMin(T value){
 
     
     while(go){
-        if(tempDepth == 1){            
-            if(inx % 2 == 0){
-                if(curr->right == nullptr){
-                    curr->right = new HeapNode(value, curr);
-                }
-                go = false;
-            }else{
+        if(curr->value <= value){
+            if(tempDepth == 1){            
+                if(inx % 2 == 0){
+                    if(curr->right == nullptr){
+                        curr->right = new HeapNode(value, curr);
+                    }
+                    go = false;
+                }else{
 
-                if(curr->left == nullptr){
-                    curr->left = new HeapNode(value, curr);
+                    if(curr->left == nullptr){
+                        curr->left = new HeapNode(value, curr);
+                    }
+                    go = false;
                 }
-                go = false;
+                inx++;
+                tempInx++;;
             }
-            inx++;
-            tempInx++;;
+        }else{
+            throw std::runtime_error("You can't insert a less value than its parent value"); 
+            return; 
         }
 
 
@@ -150,20 +187,27 @@ void Heap<T>::insertMin(T value){
     tempDepth = depth;
 
     if(depth > 1){
-        sortIt(depth-1);
+        if(inx > 1) sortIt(depth, inx - 2);
+        else sortIt(depth - 1, pow(2, depth - 1)-1);
     } 
 }
 
 template<class T>
-void Heap<T>::sortIt(int8_t deep){
+void Heap<T>::sortIt(int8_t deep, uint64_t i){
     // go deep time left
-    // HeapNode *curr = printNode(deep, 1);
+    // HeapNode *curr = reachNode(deep, 1);
 
-    for(size_t index = 1; index < pow(2, deep); index++){
-        auto now = printNode(deep, index);
-        auto next = printNode(deep, index+1);
-        if(now->value > next->value){
-            swap(now, next);
+    for(size_t index = 1; index <= i; index++){
+        auto prev = (index == 1) ? nullptr : reachNode(deep, index - 1);
+        auto now = reachNode(deep, index);
+        auto next = reachNode(deep, index + 1);
+
+
+        if(prev != nullptr){
+            if(now->value > next->value) swap(now, next);
+            if(prev->value > now->value) swap(prev, now);
+        }else{
+            if(now->value > next->value) swap(now, next);
         }
     }
 
@@ -171,7 +215,7 @@ void Heap<T>::sortIt(int8_t deep){
 }
 
 template<class T>
-auto Heap<T>::printNode(uint8_t deep, uint64_t index){
+auto Heap<T>::reachNode(uint8_t deep, uint64_t index){
     bool go = true;
     uint64_t tempIndex = index;
     HeapNode* curr = root;
@@ -226,9 +270,10 @@ void Heap<T>::printHeap(){
     }else{
         uint8_t deptH = (inx == 1) ? (depth-1) : (depth);
         for(size_t d = 0; d <= deptH; d++){
-            for(size_t leaf = 1; leaf <= pow(2, d); leaf++){
-                // std::cout << d << '-' << inx << std::endl; 
-                std::cout << printNode(d, leaf)->value << " ";
+            size_t amountOfLeaf = (d == deptH && inx > 1) ? (inx - 1) : (pow(2, d));
+            for(size_t leaf = 1; leaf <= amountOfLeaf/*pow(2, d)*/; leaf++){
+                // std::cout << d << '-' << leaf << std::endl; 
+                std::cout << reachNode(d, leaf)->value << " ";
             }
             std::cout << std::endl;
         }
