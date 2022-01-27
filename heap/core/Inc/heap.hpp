@@ -18,7 +18,6 @@ template <class T>
 class Heap {
 private:
 
-
     // Heap node class
     class HeapNode{
     private:
@@ -48,7 +47,7 @@ private:
 
     // Insertion
     void insertMin(T value);
-    // void insertMax(T value);
+    void insertMax(T value);
     void swap(HeapNode *a, HeapNode *b);
     void sortIt(int8_t deep, uint64_t i);
 
@@ -84,7 +83,6 @@ template<class T>
 HeapType Heap<T>::getType() const{
     return this->type;
 }
-
 
 template<class T>
 void Heap<T>::remove(){
@@ -123,11 +121,71 @@ void Heap<T>::insert(T value){
         // std::cout << "Min" << std::endl;
         insertMin(value);
     }else if (getType() == HeapType::MAX_HEAP){
-        std::cout << "Max" << std::endl;
-        // insertMax(value);
+        insertMax(value);
+        // std::cout << "Max" << std::endl;
     }else{
         std::cout << "Error" << std::endl;
         throw std::runtime_error("Heap type not supported");
+    }
+}
+
+template<class T>
+void Heap<T>::insertMax(T value){
+    bool go = true;
+    uint64_t tempInx = inx;
+    uint8_t tempDepth = depth;
+    HeapNode *curr = root;
+
+    if(isEmpty()){
+        root = new HeapNode(value);
+        return;
+    }
+
+        while(go){
+        if(curr->value >= value){
+            if(tempDepth == 1){            
+                if(inx % 2 == 0){
+                    if(curr->right == nullptr){
+                        curr->right = new HeapNode(value, curr);
+                    }
+                    go = false;
+                }else{
+
+                    if(curr->left == nullptr){
+                        curr->left = new HeapNode(value, curr);
+                    }
+                    go = false;
+                }
+                inx++;
+                tempInx++;;
+            }
+        }else{
+            throw std::runtime_error("You can't insert a greater value than its parent value"); 
+            return; 
+        }
+
+
+        if(tempDepth > 1){
+            uint16_t side = pow(2, tempDepth)/2; // should i go left or right?
+            if(side < tempInx){
+                curr = curr->right;
+                tempInx = tempInx - side;
+            }
+            else curr = curr->left;
+            tempDepth--;
+        }
+
+        if(inx > pow(2, depth)){
+            depth++;
+            inx = 1;
+        }
+    }
+    tempInx = inx;
+    tempDepth = depth;
+
+    if(depth > 1){
+        if(inx > 1) sortIt(depth, inx - 2);
+        else sortIt(depth - 1, pow(2, depth - 1)-1);
     }
 }
 
@@ -196,21 +254,32 @@ template<class T>
 void Heap<T>::sortIt(int8_t deep, uint64_t i){
     // go deep time left
     // HeapNode *curr = reachNode(deep, 1);
+    bool sorted = false;
 
-    for(size_t index = 1; index <= i; index++){
-        auto prev = (index == 1) ? nullptr : reachNode(deep, index - 1);
-        auto now = reachNode(deep, index);
-        auto next = reachNode(deep, index + 1);
+    while(!sorted){
+        uint64_t howMany = 0;
+        for(size_t index = 1; index <= i; index++){
+            auto prev = (index == 1) ? nullptr : reachNode(deep, index-1);
+            auto now = reachNode(deep, index);
+            auto next = reachNode(deep, index + 1);
 
-
-        if(prev != nullptr){
-            if(now->value > next->value) swap(now, next);
-            if(prev->value > now->value) swap(prev, now);
-        }else{
-            if(now->value > next->value) swap(now, next);
+            if(prev != nullptr){
+                if(now->value > next->value){
+                    swap(now, next);
+                    howMany++;
+                }
+                if(prev->value > now->value){
+                    swap(prev, now);
+                    howMany++;
+                }
+            }else if(prev == nullptr && now->value > next->value){
+                swap(now, next);
+                howMany++;
+            }
+            
         }
+        if(howMany == 0) sorted = true;
     }
-
 
 }
 
