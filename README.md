@@ -1,4 +1,4 @@
-This is data structure implementation in Cpp.
+This is data structure implementation in Cpp or C.
 When i finished, i ll add to this repo.
 
 If you wanna add something please do no hesitate
