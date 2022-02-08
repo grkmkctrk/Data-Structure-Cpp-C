@@ -100,47 +100,37 @@ class Graph{
         ~Graph(){
             delete[] nodes;
         }
+    
 
-        void addConenction(
-            size_t source, T dataS, 
-            size_t destination, T dataD,
-            int weight){
-            // create node with source and destination id
-            // create edge between them
-            Node<T> nodeSource = Node<T>(source, dataS);
-            Node<T> nodeDestination = Node<T>(destination, dataD);
-            Edge edge = Edge(destination, weight);
-
-            nodeSource.edgeList.push_back(edge);
-            nodes[source].push_back(nodeSource);
-            // std::cout << sizeof(nodes) << std::endl;
-            (nodes+destination)->push_back(nodeDestination);
-
+        // to recreate node use same id
+        void addNode(size_t id, T data){
+            if(nodes[id].begin() != nodes[id].end()){ std::cout << "Node already exists" << std::endl; }
+            else{ nodes[id].push_back(Node<T>(id, data)); }
+            
+            // Node<T> it = *nodes[id].begin();
+            // size_t datas = it.getData();
+            // std::cout << datas << std::endl;
         }
 
-        // void print(){
-        //     for(size_t i = 0; i < S; i++){
-        //         std::cout << "Node: " << i << std::endl;
-        //         for(auto node : nodes[i]){
-        //             std::cout << "  " << node.getId() << std::endl;
-        //         }
-        //     }
-        // }
+        // to recreate edge use same id
+        void connect(size_t source, size_t destination, int weight){
+            if(nodes[source].begin() == nodes[source].end()){ std::cout << "Source node does not exist" << std::endl; }
+            else if(nodes[destination].begin() == nodes[destination].end()){ std::cout << "Destination node does not exist" << std::endl; }
+            else{ nodes[source].begin()->edgeList.push_back(Edge(destination, weight)); }
+        }
 
         void print(){
-            for(size_t i = 0; i <= nodes->size() ; i++){
-                std::cout << "Node: " << i << std::endl;
-                for(auto node : nodes[i]){
-                    auto edgeList = node.getEdgeList();
-                    for(auto edge : edgeList){
-                        std::cout << "  " << edge.getDestination() << std::endl;
-                    }
+            for(size_t i = 0; i < S; i++){
+                for(auto it = nodes[i].begin(); it != nodes[i].end(); it++){
+                    std::cout << "Node(id:"<< it->getId() << ", data:" << it->getData() << ") has conenction to\n";
+                    for(auto it2 = it->edgeList.begin(); it2 != it->edgeList.end(); it2++){
+                        std::cout << "->Node(id:"<< it2->getDestination() << ") with weight:" << it2->getWeight() << std::endl;
+                    }std::cout << std::endl;
                 }
             }
         }
 
 
-        
 };
 
 #endif
