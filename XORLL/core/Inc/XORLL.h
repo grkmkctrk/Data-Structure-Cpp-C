@@ -5,26 +5,39 @@
 #include <stdlib.h>
 #include <inttypes.h>
 
-// Define the node structure
-typedef struct Node{
-    int data;
-    struct Node* npx;
-}Node;
-
-// type of print kind
+// print type
 typedef enum{
-    PRINT_HEAD,
-    PRINT_TAIL
+    pf,
+    pb
 }print_t;
 
+// Define the node structure
+typedef struct List{
+    struct Node{
+        int data;
+        struct Node* npx;
+    }head;
+
+    struct P{
+        struct Node* head;
+        struct Node* tail;
+    }loc;
+
+}* List;
+
+// new list
+List newList(List);
+
 // npx finder
-Node* npx(Node*, Node*);
+struct Node* npx(struct Node*, struct Node*);
+
+// ptr next
+void nexT(struct Node**, struct Node**, struct Node**);
 
 // insert node
-void insert(Node**, int);
+void insert(List*, int);
 
 // print list
-void print(Node*);
-
+void print(List, print_t);
 
 #endif

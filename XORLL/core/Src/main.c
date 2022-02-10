@@ -3,21 +3,15 @@
 int main(){
 
     // create a new node
-    Node* list = NULL;
-
-    // insertion
-    insert(&list, 21);
-    insert(&list, 12);
-    insert(&list, 32);
-    insert(&list, 24);
-    insert(&list, 53);
-    insert(&list, 36);
-
+    List list = newList(list);
     
+    insert(&list, 4);
+    insert(&list, 11);
+    insert(&list, 7);
+    insert(&list, 9);
+    insert(&list, 2);
 
-    // print list
-    print(list);
-
+    print(list, pf);
 
     return 0;
 }

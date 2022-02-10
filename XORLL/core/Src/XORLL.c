@@ -1,45 +1,65 @@
 #include "../Inc/XORLL.h"
 
 // npx finder
-Node* npx(Node* f, Node* s){
-    // to use pointers in process use uintptr_t 
-    return (Node*)((uintptr_t)f ^ (uintptr_t)s);
+struct Node* npx(struct Node* f, struct Node* s){
+
+    return (struct Node*)
+            ((uintptr_t)f ^ (uintptr_t)s);;
+
+}
+
+// new list
+List newList(List list){
+
+    list = (List)malloc(sizeof(struct List));
+    list->loc.head = NULL;
+    list->loc.tail = NULL;
+    return list;
+
 }
 
 // insert node
-void insert(Node** head, int data){
-    /*
-        addresses of the new node
-        [ a | null^b.npx ] [ b | a.npx^c.npx ] [c | c.npx^null ]
-    */ 
+void insert(List* list, int data){
     
-    // allocation
-    Node* newNode = (Node*)malloc(sizeof(Node));
+    // create a new node 
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
     newNode->data = data;
-    newNode->npx = *head;
+    newNode->npx = (*list)->loc.head;
 
-    if(*head != NULL){
-        // set the new node's npx to the old head's npx
-        // newNode->npx->npx = npx(newNode, (*head)->npx);
-        // or
-        (*head)->npx = npx(newNode, (*head)->npx);
-    }
-
-    // set the head to the new node
-    *head = newNode;
+    if((*list)->loc.head != NULL)
+        (*list)->loc.head->npx = npx(newNode, (*list)->loc.head->npx);
+    else
+        (*list)->loc.tail = newNode;
+    
+    (*list)->loc.head = newNode;
 
 }
 
-// print head
-void print(Node* head){
-    Node* curr = head;
-    Node* prev = NULL;
-    Node* next = NULL;
+// ptr next
+void nexT(struct Node** curr, struct Node** prev, struct Node** next){
+    
+    while(*curr != NULL){
+        printf("%d ", (*curr)->data);
+        *next = npx((*curr)->npx, *prev);
+        *prev = *curr;
+        *curr = *next;
+    }
 
-    while(curr != NULL){
-        printf("%d ", curr->data);
-        next = npx(curr->npx, prev);
-        prev = curr;
-        curr = next;
+}
+
+
+// print list
+void print(List list, print_t type){
+    
+    struct Node* prev = NULL;
+    struct Node* next = NULL;
+
+    if(type == pf){
+        struct Node* curr = list->loc.head;
+        nexT(&curr, &prev, &next);
+    }else if(type == pb){
+        struct Node* curr = list->loc.tail;
+        nexT(&curr, &prev, &next);
     }printf("\n");
+
 }
