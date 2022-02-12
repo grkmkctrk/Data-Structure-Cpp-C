@@ -74,9 +74,11 @@ int main()
     reverseNodes(&nodes);
     PrintLL(nodes);
 
-    std::cout << "---- sort() ----" << std::endl;
-    bubbleSort(&nodes);
-    PrintLL(nodes);
+    // std::cout << "---- sort() ----" << std::endl;
+    // bubbleSort(&nodes);
+    // PrintLL(nodes);
+
+    
 
     return 0;
 }
